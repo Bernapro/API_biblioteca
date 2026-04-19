@@ -2,11 +2,8 @@ package entity;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,23 +15,23 @@ import jakarta.persistence.OneToMany;
 public class Editorial {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDITORIAL_SEQ")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 
 	@Column(length = 30, name = "editorial")
 	private String nombre;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "pais")
 	private Pais pais;
 	
-	@OneToMany(mappedBy = "editorial", fetch = FetchType.LAZY)
-	@JsonIgnore
+	@OneToMany(mappedBy = "editorial")
 	private Set<Libro> libros;
 	
 	public Editorial() {
 		
 	}
+
 
 	public Set<Libro> getLibros() {
 		return libros;

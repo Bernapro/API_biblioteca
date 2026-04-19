@@ -2,11 +2,8 @@ package entity;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,14 +13,13 @@ import jakarta.persistence.ManyToMany;
 public class Categoria {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATEGORIA_SEQ")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	private Long id;
 	
 	@Column(length = 30, name = "categoria")
 	private String nombre;
 	
-	@ManyToMany(mappedBy = "categorias", fetch = FetchType.LAZY)
-	@JsonIgnore
+	@ManyToMany(mappedBy = "categorias")
 	private Set<Libro> libros;
 	
 	public Categoria() {

@@ -2,11 +2,8 @@ package entity;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,18 +15,17 @@ import jakarta.persistence.ManyToOne;
 public class Autor {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType .SEQUENCE, generator = "AUTOR_SEQ")
+	@GeneratedValue(strategy = GenerationType .SEQUENCE, generator = "ATOR_SEQ")
 	private Long id;
 	
 	@Column(nullable = false, unique = true, length = 30)
 	private String pseudonimo;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "pais")
 	private Pais pais;
 	
-	@ManyToMany(mappedBy = "autores", fetch = FetchType.LAZY)
-	@JsonIgnore
+	@ManyToMany(mappedBy = "autores")
 	private Set<Libro> obras;
 	
 	public Autor() {	
@@ -66,12 +62,5 @@ public class Autor {
 	public void setPseudonimo(String pseudonimo) {
 		this.pseudonimo = pseudonimo;
 	}
-	
-	@Override
-	public boolean equals(Object object) {
-		Autor autor = (Autor) object;
-		return this.getId() == autor.getId();
-	} 
-		
 	
 }

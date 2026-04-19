@@ -1,12 +1,10 @@
 package entity;
 
 import java.time.LocalDate;
-import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -22,7 +20,7 @@ public class Libro {
 	@Column
 	private String titulo;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany
 	@JoinTable(
 			name = "libro_autor",
 			joinColumns = @JoinColumn(name = "isbn"),
@@ -30,7 +28,7 @@ public class Libro {
 			)
 	private Set<Autor> autores;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JoinColumn(name = "editorial")
 	private Editorial editorial;
 	
@@ -43,13 +41,13 @@ public class Libro {
 	@Column
 	private String dewey;
 	
-	@Column(name = "clasificacion_congreso")
+	@Column(name = "claseficacion_congreso")
 	private String clasificacionDelCongreso;
 	
 	@Column(name = "clasificacion_dec_universal")
 	private String clasificacionDecimalUniversal;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
+	@ManyToMany
 	@JoinTable(
 			name = "libro_categoria",
 			joinColumns = @JoinColumn(name = "isbn"),
@@ -140,7 +138,6 @@ public class Libro {
 	public void setCategorias(Set<Categoria> categorias) {
 		this.categorias = categorias;
 	}
-
 	
 	
 }
