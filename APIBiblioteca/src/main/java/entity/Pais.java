@@ -3,6 +3,7 @@ package entity;
 
 
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,7 +22,7 @@ public class Pais {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PAIS_SEQ")
 	private Long id;
 	
-	@Column(length = 30, name = "pais")
+	@Column(length = 30, name = "pais", nullable = false, unique = true)
 	private String nombre;
 	
 	@OneToMany(mappedBy = "pais", fetch = FetchType.LAZY)
@@ -72,6 +73,25 @@ public class Pais {
 
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nombre);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pais other = (Pais) obj;
+		return Objects.equals(nombre, other.nombre);
 	}
 	
 	

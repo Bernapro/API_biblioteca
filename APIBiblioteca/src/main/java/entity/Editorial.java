@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,7 +22,7 @@ public class Editorial {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDITORIAL_SEQ")
 	private Long id;
 
-	@Column(length = 30, name = "editorial")
+	@Column(length = 30, name = "editorial", nullable = false, unique = true)
 	private String nombre;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -69,6 +70,25 @@ public class Editorial {
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
 	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(nombre);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Editorial other = (Editorial) obj;
+		return Objects.equals(nombre, other.nombre);
+	}
+	
+	
 	
 	
 }

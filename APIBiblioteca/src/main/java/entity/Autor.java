@@ -1,5 +1,6 @@
 package entity;
 
+import java.util.Objects;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -66,12 +67,25 @@ public class Autor {
 	public void setPseudonimo(String pseudonimo) {
 		this.pseudonimo = pseudonimo;
 	}
-	
+
+
 	@Override
-	public boolean equals(Object object) {
-		Autor autor = (Autor) object;
-		return this.getId() == autor.getId();
-	} 
+	public int hashCode() {
+		return Objects.hash(pseudonimo);
+	}
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Autor other = (Autor) obj;
+		return Objects.equals(pseudonimo, other.pseudonimo);
+	}
 		
 	
 }
