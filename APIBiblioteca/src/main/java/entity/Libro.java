@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,6 +13,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Libro {
@@ -56,6 +58,13 @@ public class Libro {
 			inverseJoinColumns = @JoinColumn(name = "categoria")
 			)
 	private Set<Categoria> categorias;
+	
+	@OneToMany(mappedBy = "libro", 
+			fetch = FetchType.LAZY, 
+			cascade = CascadeType.ALL, 
+			orphanRemoval = true)
+	private Set<Ejemplar> ejemplares;
+	
 	
 	public Libro() {
 		

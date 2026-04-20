@@ -14,12 +14,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 
 @Entity
 public class Editorial {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDITORIAL_SEQ")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDITORIAL_GEN")
+	@SequenceGenerator(
+        name = "EDITORIAL_GEN",               
+        sequenceName = "EDITORIAL_SEQ",       //nombre rea en PostgreSQL
+        allocationSize = 1                // id++
+    )
 	private Long id;
 
 	@Column(length = 30, name = "editorial", nullable = false, unique = true)

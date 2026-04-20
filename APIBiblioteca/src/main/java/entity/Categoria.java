@@ -12,12 +12,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.SequenceGenerator;
 
 @Entity
 public class Categoria {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATEGORIA_SEQ")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATEGORIA_GEN")
+	@SequenceGenerator(
+        name = "CATEGORIA_GEN",               
+        sequenceName = "CATEGORIA_SEQ",       //nombre rea en PostgreSQL
+        allocationSize = 1                // id++
+    )
 	private Long id;
 	
 	@Column(length = 30, name = "categoria", nullable = false, unique = true)

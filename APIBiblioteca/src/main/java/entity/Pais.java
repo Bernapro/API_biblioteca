@@ -2,8 +2,8 @@ package entity;
 
 
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -14,24 +14,29 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.SequenceGenerator;
 
 @Entity
 public class Pais {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PAIS_SEQ")
-	private Long id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PAIS_GEN")
+	@SequenceGenerator(
+        name = "PAIS_GEN",               
+        sequenceName = "PAIS_SEQ",       //nombre rea en PostgreSQL
+        allocationSize = 1                // id++
+    )	private Long id;
 	
 	@Column(length = 30, name = "pais", nullable = false, unique = true)
 	private String nombre;
 	
 	@OneToMany(mappedBy = "pais", fetch = FetchType.LAZY)
 	@JsonIgnore
-	private List<Editorial> editoriales;
+	private Set<Editorial> editoriales;
 	
 	@OneToMany(mappedBy = "pais", fetch = FetchType.LAZY)
 	@JsonIgnore
-	private List<Autor> autores;
+	private Set<Autor> autores;
 	
 	public Pais() {
 		
@@ -39,22 +44,22 @@ public class Pais {
 	}
 	
 
-	public List<Editorial> getEditoriales() {
+	public Set<Editorial> getEditoriales() {
 		return editoriales;
 	}
 
 
-	public void setEditoriales(List<Editorial> editoriales) {
+	public void setEditoriales(Set<Editorial> editoriales) {
 		this.editoriales = editoriales;
 	}
 
 
-	public List<Autor> getAutores() {
+	public Set<Autor> getAutores() {
 		return autores;
 	}
 
 
-	public void setAutores(List<Autor> autores) {
+	public void setAutores(Set<Autor> autores) {
 		this.autores = autores;
 	}
 
