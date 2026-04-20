@@ -1,4 +1,4 @@
-package entity;
+package com.biblioteca.entity;
 
 import java.util.Objects;
 import java.util.Set;
@@ -12,44 +12,44 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 
 @Entity
-public class Editorial {
-
+public class Autor {
+	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EDITORIAL_GEN")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "AUTOR_GEN")
 	@SequenceGenerator(
-        name = "EDITORIAL_GEN",               
-        sequenceName = "EDITORIAL_SEQ",       //nombre rea en PostgreSQL
+        name = "AUTOR_GEN",               
+        sequenceName = "AUTOR_SEQ",       //nombre rea en PostgreSQL
         allocationSize = 1                // id++
     )
 	private Long id;
-
-	@Column(length = 30, name = "editorial", nullable = false, unique = true)
-	private String nombre;
+	
+	@Column(nullable = false, unique = true, length = 30)
+	private String pseudonimo;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "pais")
 	private Pais pais;
 	
-	@OneToMany(mappedBy = "editorial", fetch = FetchType.LAZY)
+	@ManyToMany(mappedBy = "autores", fetch = FetchType.LAZY)
 	@JsonIgnore
-	private Set<Libro> libros;
+	private Set<Libro> obras;
 	
-	public Editorial() {
-		
+	public Autor() {	
+	}
+	
+	
+	public Set<Libro> getObras() {
+		return obras;
 	}
 
-	public Set<Libro> getLibros() {
-		return libros;
-	}
 
-
-	public void setLibros(Set<Libro> libros) {
-		this.libros = libros;
+	public void setObras(Set<Libro> obras) {
+		this.obras = obras;
 	}
 
 
@@ -64,23 +64,22 @@ public class Editorial {
 	public Long getId() {
 		return id;
 	}
-
 	public void setId(Long id) {
 		this.id = id;
 	}
-
-	public String getNombre() {
-		return nombre;
+	public String getPseudonimo() {
+		return pseudonimo;
+	}
+	public void setPseudonimo(String pseudonimo) {
+		this.pseudonimo = pseudonimo;
 	}
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(nombre);
+		return Objects.hash(pseudonimo);
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -90,11 +89,9 @@ public class Editorial {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Editorial other = (Editorial) obj;
-		return Objects.equals(nombre, other.nombre);
+		Autor other = (Autor) obj;
+		return Objects.equals(pseudonimo, other.pseudonimo);
 	}
-	
-	
-	
+		
 	
 }

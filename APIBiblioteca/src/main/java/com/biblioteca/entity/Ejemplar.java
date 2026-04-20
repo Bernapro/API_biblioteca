@@ -1,4 +1,4 @@
-package entity;
+package com.biblioteca.entity;
 
 import java.util.Objects;
 import java.util.Set;
@@ -7,9 +7,9 @@ import java.util.UUID;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
+import com.biblioteca.enums.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import enums.*;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

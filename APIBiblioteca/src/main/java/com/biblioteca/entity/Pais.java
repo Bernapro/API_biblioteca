@@ -1,4 +1,6 @@
-package entity;
+package com.biblioteca.entity;
+
+
 
 import java.util.Objects;
 import java.util.Set;
@@ -11,39 +13,54 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 
 @Entity
-public class Categoria {
+public class Pais {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CATEGORIA_GEN")
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PAIS_GEN")
 	@SequenceGenerator(
-        name = "CATEGORIA_GEN",               
-        sequenceName = "CATEGORIA_SEQ",       //nombre rea en PostgreSQL
+        name = "PAIS_GEN",               
+        sequenceName = "PAIS_SEQ",       //nombre rea en PostgreSQL
         allocationSize = 1                // id++
-    )
-	private Long id;
+    )	private Long id;
 	
-	@Column(length = 30, name = "categoria", nullable = false, unique = true)
+	@Column(length = 30, name = "pais", nullable = false, unique = true)
 	private String nombre;
 	
-	@ManyToMany(mappedBy = "categorias", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "pais", fetch = FetchType.LAZY)
 	@JsonIgnore
-	private Set<Libro> libros;
+	private Set<Editorial> editoriales;
 	
-	public Categoria() {
+	@OneToMany(mappedBy = "pais", fetch = FetchType.LAZY)
+	@JsonIgnore
+	private Set<Autor> autores;
+	
+	public Pais() {
+		
 		
 	}
 	
-	public Set<Libro> getLibros() {
-		return libros;
+
+	public Set<Editorial> getEditoriales() {
+		return editoriales;
 	}
 
 
-	public void setLibros(Set<Libro> libros) {
-		this.libros = libros;
+	public void setEditoriales(Set<Editorial> editoriales) {
+		this.editoriales = editoriales;
+	}
+
+
+	public Set<Autor> getAutores() {
+		return autores;
+	}
+
+
+	public void setAutores(Set<Autor> autores) {
+		this.autores = autores;
 	}
 
 
@@ -54,7 +71,6 @@ public class Categoria {
 	public void setId(Long id) {
 		this.id = id;
 	}
-	
 
 	public String getNombre() {
 		return nombre;
@@ -64,10 +80,12 @@ public class Categoria {
 		this.nombre = nombre;
 	}
 
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(nombre);
 	}
+
 
 	@Override
 	public boolean equals(Object obj) {
@@ -77,9 +95,9 @@ public class Categoria {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Categoria other = (Categoria) obj;
+		Pais other = (Pais) obj;
 		return Objects.equals(nombre, other.nombre);
 	}
-
+	
 	
 }

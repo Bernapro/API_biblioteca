@@ -1,4 +1,4 @@
-package entity;
+package com.biblioteca.entity;
 
 import java.util.Objects;
 import java.util.UUID;

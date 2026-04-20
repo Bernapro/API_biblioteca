@@ -1,4 +1,4 @@
-package enums;
+package com.biblioteca.enums;
 
 public enum EstadoEjemplar {
 	    DISPONIBLE,
