@@ -3,7 +3,9 @@ package com.biblioteca.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.biblioteca.entity.DetallePrestamo;
+
 @Repository
-public interface DetallePrestamoRepository extends JpaRepository<DetallePrestamoRepository, Long> {
+public interface DetallePrestamoRepository extends JpaRepository<DetallePrestamo, Long> {
 
 }
