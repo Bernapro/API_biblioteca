@@ -150,6 +150,14 @@ public class Libro {
 		this.categorias = categorias;
 	}
 
+	public Set<Ejemplar> getEjemplares() {
+		return ejemplares;
+	}
+
+	public void setEjemplares(Set<Ejemplar> ejemplares) {
+		this.ejemplares = ejemplares;
+	}
+
 	@Override
 	public int hashCode() {
 		return Objects.hash(isbn);
