@@ -1,5 +1,6 @@
 package com.biblioteca.entity;
 
+import java.beans.Transient;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.Set;
@@ -105,8 +106,9 @@ public class Prestamo {
 		return Objects.equals(id, other.id);
 	}
 	
-	
-	
-	
+	@Transient
+    public int getCantidadLibrosPrestados() {
+        return (this.detalles != null) ? this.detalles.size() : 0;
+    }
 	
 }
