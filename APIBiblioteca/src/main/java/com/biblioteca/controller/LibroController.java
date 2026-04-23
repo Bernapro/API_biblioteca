@@ -1,14 +1,20 @@
 package com.biblioteca.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.biblioteca.dto.LibroCompletoDTO;
 import com.biblioteca.dto.LibroRegistroDTO;
 import com.biblioteca.dto.LibroRespuestaDTO;
+import com.biblioteca.dto.LibroResumenDTO;
 import com.biblioteca.entity.Libro;
 import com.biblioteca.service.LibroService;
 
@@ -34,5 +40,17 @@ public class LibroController {
         );
         
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+    }
+    
+    @GetMapping
+    public ResponseEntity<List<LibroResumenDTO>> listarLibros() {
+        List<LibroResumenDTO> catalogo = libroService.obtenerCatalogo();
+        return ResponseEntity.ok(catalogo); 
+    }
+    
+    @GetMapping("/{isbn}")
+    public ResponseEntity<LibroCompletoDTO> obtenerLibroPorIsbn(@PathVariable String isbn) {
+        LibroCompletoDTO libroCompleto = libroService.obtenerLibroCompleto(isbn);
+        return ResponseEntity.ok(libroCompleto);
     }
 }
