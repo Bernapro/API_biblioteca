@@ -34,12 +34,12 @@ public class Ejemplar {
 	
 	@Enumerated(EnumType.STRING) 
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "estado", nullable = false)
+    @Column(name = "estado", nullable = false, columnDefinition = "estado_ejemplar")
 	private EstadoEjemplar estado;
 	
 	@Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
-    @Column(name = "condicion", nullable = false)
+    @Column(name = "condicion", nullable = false, columnDefinition = "condicion_ejemplar")
     private CondicionEjemplar condicion;
 	
 	@OneToMany(mappedBy = "ejemplar", fetch =  FetchType.LAZY)

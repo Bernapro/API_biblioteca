@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.biblioteca.entity.Autor;
-import com.biblioteca.errorHandling.Exeption.*;
+import com.biblioteca.errorHandling.Exception.*;
 import com.biblioteca.repository.AutorRepository;
 
 @Service

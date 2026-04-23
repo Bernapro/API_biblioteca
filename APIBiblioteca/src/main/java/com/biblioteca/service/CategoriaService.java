@@ -5,7 +5,7 @@ import com.biblioteca.repository.CategoriaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.biblioteca.entity.Categoria;
-import com.biblioteca.errorHandling.Exeption.ResourceNotFoundException;
+import com.biblioteca.errorHandling.Exception.ResourceNotFoundException;
 
 @Service
 public class CategoriaService {

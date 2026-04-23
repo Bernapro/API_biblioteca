@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 
-import com.biblioteca.errorHandling.Exeption.ResourceNotFoundException;
+import com.biblioteca.errorHandling.Exception.ResourceNotFoundException;
 
 @RestControllerAdvice // Combinación de @ControllerAdvice y @ResponseBody
 public class GlobalExceptionHandler {

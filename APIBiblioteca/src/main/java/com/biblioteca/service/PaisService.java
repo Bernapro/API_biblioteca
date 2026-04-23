@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.biblioteca.entity.Pais;
-import com.biblioteca.errorHandling.Exeption.ResourceNotFoundException;
+import com.biblioteca.errorHandling.Exception.ResourceNotFoundException;
 import com.biblioteca.repository.PaisRepository;
 
 @Service

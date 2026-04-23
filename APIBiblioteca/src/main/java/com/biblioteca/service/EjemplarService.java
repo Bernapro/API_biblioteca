@@ -1,0 +1,49 @@
+package com.biblioteca.service;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.biblioteca.dto.EjemplarRegistroDTO;
+import com.biblioteca.entity.Ejemplar;
+import com.biblioteca.entity.Libro;
+import com.biblioteca.enums.EstadoEjemplar;
+import com.biblioteca.errorHandling.Exception.*;
+import com.biblioteca.repository.EjemplarRepository;
+import com.biblioteca.repository.LibroRepository;
+
+@Service
+public class EjemplarService {
+
+	private final EjemplarRepository ejemplarRepository;
+	private final LibroRepository libroRepository;
+
+	public EjemplarService(EjemplarRepository ejemplarRepository, LibroRepository libroRepository) {
+		this.ejemplarRepository = ejemplarRepository;
+		this.libroRepository = libroRepository;
+	}
+
+	@Transactional
+	public Ejemplar registrarEjemplar(EjemplarRegistroDTO dto) {
+
+		// todavía no me decido si el número de adquisición lo delego a la BD
+		// o suponer que ya viene con el libro, por el momento está bien así
+		if (ejemplarRepository.existsByNoAdquisicion(dto.noAdquisicion())) {
+			throw new IllegalArgumentException(
+					"El número de adquisición " + dto.noAdquisicion() + " ya está registrado.");
+		}
+
+		// si el libro existe se llena el objeto y se guarda
+		// el estado de un ejemplar nuevo es, por obvias razones, disponible
+		Libro libroPadre = libroRepository.findById(dto.isbnLibro()).orElseThrow(() -> new ResourceNotFoundException(
+				"No se puede registrar el ejemplar. El libro con ISBN " + dto.isbnLibro() + " no existe."));
+
+		Ejemplar nuevoEjemplar = new Ejemplar();
+		nuevoEjemplar.setNoAdquisicion(dto.noAdquisicion());
+		nuevoEjemplar.setCondicion(dto.condicion());
+		nuevoEjemplar.setLibro(libroPadre);
+
+		nuevoEjemplar.setEstado(EstadoEjemplar.DISPONIBLE);
+
+		return ejemplarRepository.save(nuevoEjemplar);
+	}
+}

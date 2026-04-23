@@ -14,7 +14,7 @@ import com.biblioteca.entity.Autor;
 import com.biblioteca.entity.Categoria;
 import com.biblioteca.entity.Editorial;
 import com.biblioteca.entity.Libro;
-import com.biblioteca.errorHandling.Exeption.*;
+import com.biblioteca.errorHandling.Exception.*;
 import com.biblioteca.repository.AutorRepository;
 import com.biblioteca.repository.CategoriaRepository;
 import com.biblioteca.repository.EditorialRepository;
