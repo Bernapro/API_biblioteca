@@ -2,11 +2,15 @@ package com.biblioteca.service;
 
 import java.time.LocalDate;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.biblioteca.dto.PrestamoCompletoDTO;
 import com.biblioteca.dto.PrestamoRegistroDTO;
 import com.biblioteca.entity.DetallePrestamo;
 import com.biblioteca.entity.Ejemplar;
@@ -89,4 +93,24 @@ public class PrestamoService {
 
 		return prestamo;
 	}
+	
+	@Transactional(readOnly = true)
+    public List<PrestamoCompletoDTO> obtenerHistorialUsuario(String usuario) {
+        
+        List<Prestamo> historial = prestamoRepository.obtenerHistorialPorUsuario(usuario);
+
+        return historial.stream().map(prestamo -> {
+            
+            String estadoTransaccion = (prestamo.getFechaDevolucion() == null) ? "ACTIVO" : "DEVUELTO";
+            
+            return new PrestamoCompletoDTO(
+                prestamo.getId(),
+                prestamo.getFechaInicio(),
+                prestamo.getFechaLimite(),
+                prestamo.getFechaDevolucion(),
+                prestamo.getCantidadLibrosPrestados(), 
+                estadoTransaccion
+            );
+        }).collect(Collectors.toList());
+    }
 }
