@@ -4,12 +4,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.biblioteca.dto.LibroCompletoDTO;
 import com.biblioteca.dto.LibroRegistroDTO;
 import com.biblioteca.dto.LibroResumenDTO;
+import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.entity.Autor;
 import com.biblioteca.entity.Categoria;
 import com.biblioteca.entity.Editorial;
@@ -90,8 +94,20 @@ public class LibroService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<LibroResumenDTO> obtenerCatalogo() {
-		return libroRepository.obtenerCatalogoResumido();
+	public PaginaRespuestaDTO<LibroResumenDTO> obtenerCatalogo(int numeroPagina, int tamanoPagina) {
+		
+        Pageable peticionPagina = PageRequest.of(numeroPagina, tamanoPagina);  
+      
+        Page<LibroResumenDTO> paginaLibros = libroRepository.obtenerCatalogoResumido(peticionPagina);
+      
+        return new PaginaRespuestaDTO<>(
+            paginaLibros.getContent(),
+            paginaLibros.getNumber(),
+            paginaLibros.getSize(),
+            paginaLibros.getTotalElements(),
+            paginaLibros.getTotalPages(),
+            paginaLibros.isLast()
+        );
 	}
 
 	@Transactional(readOnly = true)

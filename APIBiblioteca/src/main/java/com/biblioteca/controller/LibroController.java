@@ -1,6 +1,5 @@
 package com.biblioteca.controller;
 
-import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,12 +8,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.biblioteca.dto.LibroCompletoDTO;
 import com.biblioteca.dto.LibroRegistroDTO;
 import com.biblioteca.dto.LibroRespuestaDTO;
 import com.biblioteca.dto.LibroResumenDTO;
+import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.entity.Libro;
 import com.biblioteca.service.LibroService;
 
@@ -43,9 +44,12 @@ public class LibroController {
     }
     
     @GetMapping
-    public ResponseEntity<List<LibroResumenDTO>> listarLibros() {
-        List<LibroResumenDTO> catalogo = libroService.obtenerCatalogo();
-        return ResponseEntity.ok(catalogo); 
+    public ResponseEntity<PaginaRespuestaDTO<LibroResumenDTO>> listarLibrosPaginados(
+            @RequestParam(defaultValue = "0") int nPage,
+            @RequestParam(defaultValue = "10") int len
+    ) {
+        PaginaRespuestaDTO<LibroResumenDTO> catalogo = libroService.obtenerCatalogo(nPage, len);
+        return ResponseEntity.ok(catalogo);
     }
     
     @GetMapping("/{isbn}")

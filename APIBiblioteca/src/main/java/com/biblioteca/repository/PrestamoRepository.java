@@ -16,4 +16,7 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, UUID> {
 	@Query("SELECT DISTINCT p FROM Prestamo p LEFT JOIN FETCH p.detalles WHERE p.usuario = :usuario ORDER BY p.fechaInicio DESC")
     List<Prestamo> obtenerHistorialPorUsuario(@Param("usuario") String usuario);
 	
+	@Query("SELECT DISTINCT p FROM Prestamo p LEFT JOIN FETCH p.detalles ORDER BY p.fechaInicio DESC")
+    List<Prestamo> obtenerTodos();
+	
 }
