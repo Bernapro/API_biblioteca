@@ -11,9 +11,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 
 @Entity
@@ -28,12 +26,8 @@ public class Autor {
     )
 	private Long id;
 	
-	@Column(nullable = false, unique = true, length = 30)
+	@Column(nullable = false, unique = true, length = 40)
 	private String pseudonimo;
-	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "pais")
-	private Pais pais;
 	
 	@ManyToMany(mappedBy = "autores", fetch = FetchType.LAZY)
 	@JsonIgnore
@@ -50,15 +44,6 @@ public class Autor {
 
 	public void setObras(Set<Libro> obras) {
 		this.obras = obras;
-	}
-
-
-	public Pais getPais() {
-		return pais;
-	}
-
-	public void setPais(Pais pais) {
-		this.pais = pais;
 	}
 
 	public Long getId() {

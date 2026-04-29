@@ -2,6 +2,7 @@ package com.biblioteca.entity;
 
 import java.beans.Transient;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
@@ -18,27 +19,24 @@ public class Prestamo {
 
 	@Id
 	private UUID id = UUID.randomUUID();
-	
+
 	@Column(name = "fecha_inicio")
 	private LocalDate fechaInicio;
 
 	@Column(name = "fecha_limite")
 	private LocalDate fechaLimite;
-	
+
 	@Column(name = "fecha_devolucion")
 	private LocalDate fechaDevolucion;
-	
+
 	@Column
 	private String usuario;
-	
-	@OneToMany(mappedBy = "prestamo",
-			fetch = FetchType.LAZY, 
-			cascade = CascadeType.ALL, 
-			orphanRemoval = true)
+
+	@OneToMany(mappedBy = "prestamo", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<DetallePrestamo> detalles;
-	
+
 	public Prestamo() {
-		
+
 	}
 
 	public UUID getId() {
@@ -105,10 +103,26 @@ public class Prestamo {
 		Prestamo other = (Prestamo) obj;
 		return Objects.equals(id, other.id);
 	}
-	
+
 	@Transient
-    public int getCantidadLibrosPrestados() {
-        return (this.detalles != null) ? this.detalles.size() : 0;
-    }
-	
+	public int getCantidadLibrosPrestados() {
+		return (this.detalles != null) ? this.detalles.size() : 0;
+	}
+
+	@Transient
+	public boolean fueDevuelto() {
+		return (this.fechaDevolucion != null) ? true : false;
+	}
+
+	@Transient
+	public long diasDeAtraso() {
+		long diasAtraso = 0;
+		long diasEntreFecha;
+		LocalDate fechaInicio = this.fechaLimite;
+		LocalDate fechaFin = this.fueDevuelto() ? this.fechaDevolucion : LocalDate.now();
+		diasEntreFecha = ChronoUnit.DAYS.between(fechaInicio, fechaFin);
+		diasAtraso = diasEntreFecha < 0 ? 0 : diasEntreFecha;
+		return diasAtraso;
+	}
+
 }

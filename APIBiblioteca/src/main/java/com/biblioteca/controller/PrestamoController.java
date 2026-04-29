@@ -12,10 +12,15 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 import com.biblioteca.dto.FinalizarPrestamoRespuestaDTO;
+import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.dto.PrestamoCompletoDTO;
+import com.biblioteca.dto.PrestamoHistorialDTO;
 import com.biblioteca.dto.PrestamoRegistroDTO;
 import com.biblioteca.dto.PrestamoRespuestaDTO;
+import com.biblioteca.dto.PrestamoResumenDTO;
 import com.biblioteca.entity.Prestamo;
 import com.biblioteca.service.PrestamoService;
 
@@ -62,17 +67,26 @@ public class PrestamoController {
 	}
 	
 	@GetMapping("/usuario/{usuario}")
-    public ResponseEntity<List<PrestamoCompletoDTO>> obtenerHistorial(@PathVariable("usuario") String usuario) {
+    public ResponseEntity<List<PrestamoHistorialDTO>> obtenerHistorial(@PathVariable("usuario") String usuario) {
         
-        List<PrestamoCompletoDTO> historial = prestamoService.obtenerHistorialUsuario(usuario);
+        List<PrestamoHistorialDTO> historial = prestamoService.obtenerHistorialUsuario(usuario);
         
         return new ResponseEntity<>(historial, HttpStatus.OK);
     }
 	
-	@GetMapping
-    public ResponseEntity<List<PrestamoCompletoDTO>> obtenerPrestamos() {
+    @GetMapping
+    public ResponseEntity<PaginaRespuestaDTO<PrestamoResumenDTO>> listarLibrosPaginados(
+            @RequestParam(defaultValue = "0") int nPage,
+            @RequestParam(defaultValue = "10") int len
+    ) {
+        PaginaRespuestaDTO<PrestamoResumenDTO> catalogo = prestamoService.obtenerCatalogo(nPage, len);
+        return ResponseEntity.ok(catalogo);
+    }
+    
+	@GetMapping("{id}")
+    public ResponseEntity <PrestamoCompletoDTO> obtenerPrestamo(@PathVariable("id") UUID id) {
         
-        List<PrestamoCompletoDTO> historial = null;
+        PrestamoCompletoDTO historial = prestamoService.obtenerPrestamo(id);
         
         return new ResponseEntity<>(historial, HttpStatus.OK);
     }

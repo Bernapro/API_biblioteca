@@ -3,15 +3,21 @@ package com.biblioteca.service;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.dto.PrestamoCompletoDTO;
+import com.biblioteca.dto.PrestamoHistorialDTO;
 import com.biblioteca.dto.PrestamoRegistroDTO;
+import com.biblioteca.dto.PrestamoResumenDTO;
 import com.biblioteca.entity.DetallePrestamo;
 import com.biblioteca.entity.Ejemplar;
 import com.biblioteca.entity.Prestamo;
@@ -22,6 +28,7 @@ import com.biblioteca.repository.PrestamoRepository;
 
 @Service
 public class PrestamoService {
+
 
 	private final PrestamoRepository prestamoRepository;
 	private final EjemplarRepository ejemplarRepository;
@@ -93,24 +100,47 @@ public class PrestamoService {
 
 		return prestamo;
 	}
-	
-	@Transactional(readOnly = true)
-    public List<PrestamoCompletoDTO> obtenerHistorialUsuario(String usuario) {
-        
-        List<Prestamo> historial = prestamoRepository.obtenerHistorialPorUsuario(usuario);
 
-        return historial.stream().map(prestamo -> {
-            
-            String estadoTransaccion = (prestamo.getFechaDevolucion() == null) ? "ACTIVO" : "DEVUELTO";
-            
-            return new PrestamoCompletoDTO(
-                prestamo.getId(),
-                prestamo.getFechaInicio(),
-                prestamo.getFechaLimite(),
-                prestamo.getFechaDevolucion(),
-                prestamo.getCantidadLibrosPrestados(), 
-                estadoTransaccion
-            );
-        }).collect(Collectors.toList());
-    }
+	@Transactional(readOnly = true)
+	public List<PrestamoHistorialDTO> obtenerHistorialUsuario(String usuario) {
+
+		List<Prestamo> historial = prestamoRepository.obtenerHistorialPorUsuario(usuario);
+
+		return historial.stream().map(prestamo -> {
+			
+			long diasAtraso = prestamo.diasDeAtraso();
+
+			String estado = prestamo.fueDevuelto() ? "finalizado" : diasAtraso > 0 ? "Atrasado" : "A tiempo";
+
+			return new PrestamoHistorialDTO(prestamo.getId(), prestamo.getFechaInicio(), prestamo.getFechaLimite(),
+					prestamo.getFechaDevolucion(), prestamo.getCantidadLibrosPrestados(), estado, diasAtraso);
+		}).collect(Collectors.toList());
+	}
+
+	@Transactional(readOnly = true)
+	public PaginaRespuestaDTO<PrestamoResumenDTO> obtenerCatalogo(int numeroPagina, int tamanoPagina) {
+
+		Pageable peticionPagina = PageRequest.of(numeroPagina, tamanoPagina);
+
+		Page<PrestamoResumenDTO> paginaPrestamos = prestamoRepository.obtenerCatalogoResumido(peticionPagina);
+
+		return new PaginaRespuestaDTO<>(paginaPrestamos.getContent(), paginaPrestamos.getNumber(),
+				paginaPrestamos.getSize(), paginaPrestamos.getTotalElements(), paginaPrestamos.getTotalPages(),
+				paginaPrestamos.isLast());
+	}
+
+	@Transactional(readOnly = true)
+	public PrestamoCompletoDTO obtenerPrestamo(UUID id) {
+		Optional<Prestamo> prestamoOpt = prestamoRepository.findById(id);
+		Prestamo prestamo = prestamoOpt.get();
+		if (prestamo == null) {
+			return null;
+		}
+		long diasAtraso = prestamo.diasDeAtraso();
+		String estado = prestamo.fueDevuelto() ? "finalizado" : diasAtraso > 0 ? "Atrasado" : "A tiempo";
+
+		return new PrestamoCompletoDTO(prestamo.getId(), prestamo.getUsuario(),prestamo.getFechaInicio(), prestamo.getFechaLimite(),
+				prestamo.getFechaDevolucion(), prestamo.getCantidadLibrosPrestados(), estado, diasAtraso);
+
+	}
 }

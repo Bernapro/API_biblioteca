@@ -1,7 +1,6 @@
 package com.biblioteca.service;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
@@ -67,25 +66,40 @@ public class LibroService {
 		// Es una lógica muy similar para la validación de autores, editoriales y
 		// categorias
 		// más adelante veré como abstraerlo para evitar repetir código
-		if (dto.autoresIds() != null && !dto.autoresIds().isEmpty()) {
+		if (dto.autores() != null && !dto.autores().isEmpty()) {
 			Set<Autor> autores = new HashSet<>();
-			for (Long id : dto.autoresIds()) {
+			/*for (Long id : dto.autoresIds()) {
 				Autor autor = autorRepository.findById(id).orElseThrow(
 						() -> new ResourceNotFoundException("El autor con ID " + id + " no está registrado."));
 				autores.add(autor);
+			}
+			libro.setAutores(autores);
+			*/
+			for (String nombreIngresado : dto.autores()) {
+	            
+	            Autor autorResuelto = autorRepository.encontrarAutorNormalizado(nombreIngresado)
+	                .orElseGet(() -> {
+	                    Autor nuevoAutor = new Autor();
+	                    nuevoAutor.setPseudonimo(nombreIngresado.trim());
+	                    return autorRepository.save(nuevoAutor); 
+	                });
+	            autores.add(autorResuelto);
 			}
 			libro.setAutores(autores);
 		} else {
 			throw new IllegalArgumentException("El libro debe tener al menos un autor.");
 		}
 
-		if (dto.categoriasIds() != null && !dto.categoriasIds().isEmpty()) {
+		if (dto.categorias() != null && !dto.categorias().isEmpty()) {
 			Set<Categoria> categorias = new HashSet<>();
-			for (Long id : dto.categoriasIds()) {
-				Categoria categoria = categoriaRepository.findById(id).orElseThrow(
-						() -> new ResourceNotFoundException("La categoría con ID " + id + " no está registrada."));
-				categorias.add(categoria);
-			}
+			for (String nombre : dto.categorias()) {
+	            categorias.add(categoriaRepository.encontrarCategoriaNormalizada(nombre)
+	                .orElseGet(() -> {
+	                    Categoria nueva = new Categoria();
+	                    nueva.setNombre(nombre.trim());
+	                    return categoriaRepository.save(nueva);
+	                }));
+	        }
 			libro.setCategorias(categorias);
 		}
 
@@ -95,19 +109,13 @@ public class LibroService {
 
 	@Transactional(readOnly = true)
 	public PaginaRespuestaDTO<LibroResumenDTO> obtenerCatalogo(int numeroPagina, int tamanoPagina) {
-		
-        Pageable peticionPagina = PageRequest.of(numeroPagina, tamanoPagina);  
-      
-        Page<LibroResumenDTO> paginaLibros = libroRepository.obtenerCatalogoResumido(peticionPagina);
-      
-        return new PaginaRespuestaDTO<>(
-            paginaLibros.getContent(),
-            paginaLibros.getNumber(),
-            paginaLibros.getSize(),
-            paginaLibros.getTotalElements(),
-            paginaLibros.getTotalPages(),
-            paginaLibros.isLast()
-        );
+
+		Pageable peticionPagina = PageRequest.of(numeroPagina, tamanoPagina);
+
+		Page<LibroResumenDTO> paginaLibros = libroRepository.obtenerCatalogoResumido(peticionPagina);
+
+		return new PaginaRespuestaDTO<>(paginaLibros.getContent(), paginaLibros.getNumber(), paginaLibros.getSize(),
+				paginaLibros.getTotalElements(), paginaLibros.getTotalPages(), paginaLibros.isLast());
 	}
 
 	@Transactional(readOnly = true)
@@ -115,16 +123,16 @@ public class LibroService {
 		Libro libro = libroRepository.obtenerLibroConEditorial(isbn)
 				.orElseThrow(() -> new ResourceNotFoundException("El libro con ISBN " + isbn + " no existe."));
 		/*
-		 * Utilizo Streams para que sea más fácil construir la lista,
-		 * solo necesito los nombres de los autores y categorías 
-		 * */
-		
+		 * Utilizo Streams para que sea más fácil construir la lista, solo necesito los
+		 * nombres de los autores y categorías
+		 */
+
 		String[] nombresAutores = libro.getAutores().stream().map(Autor::getPseudonimo).toArray(String[]::new);
 
 		String[] nombresCategorias = libro.getCategorias().stream().map(Categoria::getNombre).toArray(String[]::new);
 
-		//por si acaso
-		String nombreEditorial = (libro.getEditorial() != null) ? libro.getEditorial().getNombre() : "Sin Editorial";
+		// por si acaso
+		String nombreEditorial = (libro.getEditorial() != null) ? libro.getEditorial().getNombre() : "Publicación propia";
 
 		return new LibroCompletoDTO(libro.getIsbn(), libro.getTitulo(), nombreEditorial, libro.getEdicion(),
 				nombresAutores, libro.getFechaPublicacion(), nombresCategorias, libro.getDewey(),

@@ -11,8 +11,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 
@@ -31,10 +29,6 @@ public class Editorial {
 	@Column(length = 30, name = "editorial", nullable = false, unique = true)
 	private String nombre;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "pais")
-	private Pais pais;
-	
 	@OneToMany(mappedBy = "editorial", fetch = FetchType.LAZY)
 	@JsonIgnore
 	private Set<Libro> libros;
@@ -50,15 +44,6 @@ public class Editorial {
 
 	public void setLibros(Set<Libro> libros) {
 		this.libros = libros;
-	}
-
-
-	public Pais getPais() {
-		return pais;
-	}
-
-	public void setPais(Pais pais) {
-		this.pais = pais;
 	}
 
 	public Long getId() {
