@@ -16,11 +16,15 @@ import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.entity.Autor;
 import com.biblioteca.entity.Categoria;
 import com.biblioteca.entity.Editorial;
+import com.biblioteca.entity.Ejemplar;
 import com.biblioteca.entity.Libro;
+import com.biblioteca.enums.CondicionEjemplar;
+import com.biblioteca.enums.EstadoEjemplar;
 import com.biblioteca.errorHandling.Exception.*;
 import com.biblioteca.repository.AutorRepository;
 import com.biblioteca.repository.CategoriaRepository;
 import com.biblioteca.repository.EditorialRepository;
+import com.biblioteca.repository.EjemplarRepository;
 import com.biblioteca.repository.LibroRepository;
 
 @Service
@@ -30,13 +34,15 @@ public class LibroService {
 	private final EditorialRepository editorialRepository;
 	private final AutorRepository autorRepository;
 	private final CategoriaRepository categoriaRepository;
+	private final EjemplarRepository ejemplarRepository;
 
 	public LibroService(LibroRepository libroRepository, EditorialRepository editorialRepository,
-			AutorRepository autorRepository, CategoriaRepository categoriaRepository) {
+			AutorRepository autorRepository, CategoriaRepository categoriaRepository, EjemplarRepository ejmEjemplarRepository) {
 		this.libroRepository = libroRepository;
 		this.editorialRepository = editorialRepository;
 		this.autorRepository = autorRepository;
 		this.categoriaRepository = categoriaRepository;
+		this.ejemplarRepository = ejmEjemplarRepository;
 	}
 
 	@Transactional
@@ -54,13 +60,12 @@ public class LibroService {
 
 		// luego se validan los id´s de los objtos que se relacionan con el libro
 		// evidentemente, si persisten en la BD se setea el atributo del obj libro
-		if (dto.editorial() != null) {
-			Editorial editorial = editorialRepository.encontrarEditorialNormalizada(dto.editorial())
-					.orElseGet(() -> {
-						Editorial ed = new Editorial();
-						ed.setNombre(dto.editorial());
-						return editorialRepository.save(ed);
-					});
+		if (dto.editorial() != null && !dto.editorial().isBlank()) {
+			Editorial editorial = editorialRepository.encontrarEditorialNormalizada(dto.editorial()).orElseGet(() -> {
+				Editorial ed = new Editorial();
+				ed.setNombre(dto.editorial());
+				return editorialRepository.save(ed);
+			});
 			libro.setEditorial(editorial);
 		} else {
 			throw new IllegalArgumentException("Todo libro debe tener una editorial asociada.");
@@ -71,22 +76,22 @@ public class LibroService {
 		// más adelante veré como abstraerlo para evitar repetir código
 		if (dto.autores() != null && !dto.autores().isEmpty()) {
 			Set<Autor> autores = new HashSet<>();
-			/*for (Long id : dto.autoresIds()) {
-				Autor autor = autorRepository.findById(id).orElseThrow(
-						() -> new ResourceNotFoundException("El autor con ID " + id + " no está registrado."));
-				autores.add(autor);
-			}
-			libro.setAutores(autores);
-			*/
+			/*
+			 * for (Long id : dto.autoresIds()) { Autor autor =
+			 * autorRepository.findById(id).orElseThrow( () -> new
+			 * ResourceNotFoundException("El autor con ID " + id + " no está registrado."));
+			 * autores.add(autor); } libro.setAutores(autores);
+			 */
 			for (String nombreIngresado : dto.autores()) {
-	            
-	            Autor autorResuelto = autorRepository.encontrarAutorNormalizado(nombreIngresado)
-	                .orElseGet(() -> {
-	                    Autor nuevoAutor = new Autor();
-	                    nuevoAutor.setPseudonimo(nombreIngresado.trim());
-	                    return autorRepository.save(nuevoAutor); 
-	                });
-	            autores.add(autorResuelto);
+				if (nombreIngresado.isBlank()) {
+					throw new IllegalArgumentException("El autor está vacío");
+				}
+				Autor autorResuelto = autorRepository.encontrarAutorNormalizado(nombreIngresado).orElseGet(() -> {
+					Autor nuevoAutor = new Autor();
+					nuevoAutor.setPseudonimo(nombreIngresado.trim());
+					return autorRepository.save(nuevoAutor);
+				});
+				autores.add(autorResuelto);
 			}
 			libro.setAutores(autores);
 		} else {
@@ -95,15 +100,32 @@ public class LibroService {
 
 		if (dto.categorias() != null && !dto.categorias().isEmpty()) {
 			Set<Categoria> categorias = new HashSet<>();
+
 			for (String nombre : dto.categorias()) {
-	            categorias.add(categoriaRepository.encontrarCategoriaNormalizada(nombre)
-	                .orElseGet(() -> {
-	                    Categoria nueva = new Categoria();
-	                    nueva.setNombre(nombre.trim());
-	                    return categoriaRepository.save(nueva);
-	                }));
-	        }
+				if (nombre.isBlank()) {
+					throw new IllegalArgumentException("La categoría está vacía");
+				}
+				categorias.add(categoriaRepository.encontrarCategoriaNormalizada(nombre).orElseGet(() -> {
+					Categoria nueva = new Categoria();
+					nueva.setNombre(nombre.trim());
+					return categoriaRepository.save(nueva);
+				}));
+			}
 			libro.setCategorias(categorias);
+		}
+		
+		libro.setEjemplares(new HashSet<>());
+		for (int i = 0; i < dto.nEjemplares(); i++) {
+
+			Long secuencia = ejemplarRepository.obtenerSiguienteSecuenciaAdquisicion();
+			String noAdquisicion = String.format("ADQ-%07d", secuencia);
+
+			Ejemplar ejemplar = new Ejemplar();
+			ejemplar.setNoAdquisicion(noAdquisicion);
+			ejemplar.setEstado(EstadoEjemplar.DISPONIBLE);
+			ejemplar.setCondicion(CondicionEjemplar.NUEVO);
+
+			libro.addEjemplar(ejemplar);
 		}
 
 		// si llegue hasta aquí supongo que todo salió bien
@@ -135,7 +157,8 @@ public class LibroService {
 		String[] nombresCategorias = libro.getCategorias().stream().map(Categoria::getNombre).toArray(String[]::new);
 
 		// por si acaso
-		String nombreEditorial = (libro.getEditorial() != null) ? libro.getEditorial().getNombre() : "Publicación propia";
+		String nombreEditorial = (libro.getEditorial() != null) ? libro.getEditorial().getNombre()
+				: "Publicación propia";
 
 		return new LibroCompletoDTO(libro.getIsbn(), libro.getTitulo(), nombreEditorial, libro.getEdicion(),
 				nombresAutores, libro.getFechaPublicacion(), nombresCategorias, libro.getDewey(),

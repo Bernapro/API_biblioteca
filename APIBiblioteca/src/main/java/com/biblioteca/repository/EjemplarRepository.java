@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.biblioteca.entity.Ejemplar;
@@ -14,4 +15,7 @@ public interface EjemplarRepository extends JpaRepository<Ejemplar, UUID> {
 	List<Ejemplar> findByLibroIsbn(String isbn);
     
     boolean existsByNoAdquisicion(String noAdquisicion);
+    
+    @Query(value = "SELECT nextval('seq_no_adquisicion')", nativeQuery = true)
+    Long obtenerSiguienteSecuenciaAdquisicion();
 }

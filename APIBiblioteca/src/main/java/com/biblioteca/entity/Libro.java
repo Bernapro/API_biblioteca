@@ -1,6 +1,7 @@
 package com.biblioteca.entity;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -156,6 +157,22 @@ public class Libro {
 
 	public void setEjemplares(Set<Ejemplar> ejemplares) {
 		this.ejemplares = ejemplares;
+	}
+	
+	public void addEjemplar(Ejemplar ejemplar) {
+        this.ejemplares.add(ejemplar);
+        ejemplar.setLibro(this);
+    }
+	
+	public Set<String> getNumAdquisicion(){
+		Set<String> numsAdquisicion = new HashSet<>();
+		Set<Ejemplar> ejemplaresTmp = this.ejemplares;
+		if(!ejemplaresTmp.isEmpty()) {
+			for (Ejemplar ejemplar : ejemplaresTmp) {
+				numsAdquisicion.add(ejemplar.getNoAdquisicion());
+			}
+		}
+		return numsAdquisicion;
 	}
 
 	@Override

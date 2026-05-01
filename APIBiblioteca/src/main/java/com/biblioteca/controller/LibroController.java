@@ -36,6 +36,7 @@ public class LibroController {
         LibroRespuestaDTO respuesta = new LibroRespuestaDTO(
             libroGuardado.getIsbn(),
             libroGuardado.getTitulo(),
+            libroGuardado.getNumAdquisicion(),
             "El libro ha sido registrado exitosamente en el catálogo."
         );
         

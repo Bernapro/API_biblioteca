@@ -15,6 +15,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -23,7 +25,8 @@ import jakarta.persistence.OneToMany;
 public class Ejemplar {
 
 	@Id
-	private UUID id = UUID.randomUUID();
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private UUID id;
 	
 	@Column(nullable = false, unique = true, name = "no_adquisicion")
 	private String noAdquisicion;
@@ -100,7 +103,7 @@ public class Ejemplar {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(id);
+		return Objects.hash(noAdquisicion);
 	}
 
 	@Override
@@ -112,7 +115,7 @@ public class Ejemplar {
 		if (getClass() != obj.getClass())
 			return false;
 		Ejemplar other = (Ejemplar) obj;
-		return Objects.equals(id, other.id);
+		return Objects.equals(noAdquisicion, other.noAdquisicion);
 	}
 	
 	
