@@ -17,7 +17,8 @@ public record LibroRegistroDTO(
 		// acceso
 		// ya que por defecto los atributos son private final.
 		// además genera los getters
-		String isbn, String titulo, Long editorialId, String edicion, LocalDate fechaPublicacion, String dewey,
+		
+		String isbn, String titulo, String editorial, String edicion, LocalDate fechaPublicacion, String dewey,
 		String clasificacionDelCongreso, String clasificacionDecimalUniversal, Set<String> autores,
 		Set<String> categorias) {
 }

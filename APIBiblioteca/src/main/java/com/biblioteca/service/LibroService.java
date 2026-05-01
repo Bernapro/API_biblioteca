@@ -54,10 +54,13 @@ public class LibroService {
 
 		// luego se validan los id´s de los objtos que se relacionan con el libro
 		// evidentemente, si persisten en la BD se setea el atributo del obj libro
-		if (dto.editorialId() != null) {
-			Editorial editorial = editorialRepository.findById(dto.editorialId())
-					.orElseThrow(() -> new ResourceNotFoundException(
-							"La editorial con ID " + dto.editorialId() + " no está registrada."));
+		if (dto.editorial() != null) {
+			Editorial editorial = editorialRepository.encontrarEditorialNormalizada(dto.editorial())
+					.orElseGet(() -> {
+						Editorial ed = new Editorial();
+						ed.setNombre(dto.editorial());
+						return editorialRepository.save(ed);
+					});
 			libro.setEditorial(editorial);
 		} else {
 			throw new IllegalArgumentException("Todo libro debe tener una editorial asociada.");

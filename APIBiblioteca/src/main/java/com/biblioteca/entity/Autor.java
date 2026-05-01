@@ -52,9 +52,11 @@ public class Autor {
 	public void setId(Long id) {
 		this.id = id;
 	}
+	
 	public String getPseudonimo() {
 		return pseudonimo;
 	}
+	
 	public void setPseudonimo(String pseudonimo) {
 		this.pseudonimo = pseudonimo;
 	}
