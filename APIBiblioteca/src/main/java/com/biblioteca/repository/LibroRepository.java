@@ -1,6 +1,5 @@
 package com.biblioteca.repository;
 
-
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,11 +14,11 @@ import com.biblioteca.entity.Libro;
 
 @Repository
 public interface LibroRepository extends JpaRepository<Libro, String> {
-
-	@Query("SELECT new com.biblioteca.dto.LibroResumenDTO(l.isbn, l.titulo, e.nombre) "
-			+ "FROM Libro l JOIN l.editorial e")
-	Page<LibroResumenDTO> obtenerCatalogoResumido(Pageable pageable);
 	
+	@Query("SELECT new com.biblioteca.dto.LibroResumenDTO(l.isbn, l.titulo, e.nombre, COUNT(ej)) " + "FROM Libro l "
+			+ "JOIN l.editorial e " + "LEFT JOIN l.ejemplares ej " + "GROUP BY l.isbn, l.titulo, e.nombre")
+	Page<LibroResumenDTO> obtenerCatalogoResumido(Pageable pageable);
+
 	@Query("SELECT l FROM Libro l LEFT JOIN FETCH l.editorial WHERE l.isbn = :isbn")
-    Optional<Libro> obtenerLibroConEditorial(@Param("isbn") String isbn);
+	Optional<Libro> obtenerLibroConEditorial(@Param("isbn") String isbn);
 }
