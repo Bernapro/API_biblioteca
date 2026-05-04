@@ -11,11 +11,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.biblioteca.dto.LibroCompletoDTO;
+import com.biblioteca.dto.LibroEnriquecidoDTO;
 import com.biblioteca.dto.LibroRegistroDTO;
 import com.biblioteca.dto.LibroRespuestaDTO;
 import com.biblioteca.dto.LibroResumenDTO;
 import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.entity.Libro;
+import com.biblioteca.service.CatalogoOrquestadorService;
 import com.biblioteca.service.LibroService;
 
 @RestController
@@ -23,9 +25,10 @@ import com.biblioteca.service.LibroService;
 public class LibroController {
 
     private final LibroService libroService;
-    
-    public LibroController(LibroService libroService) {
+    private final CatalogoOrquestadorService orquestadorService;
+    public LibroController(LibroService libroService, CatalogoOrquestadorService orquestadorService) {
         this.libroService = libroService;
+        this.orquestadorService = orquestadorService;
     }
 
     @PostMapping
@@ -56,5 +59,25 @@ public class LibroController {
     public ResponseEntity<LibroCompletoDTO> obtenerLibroPorIsbn(@PathVariable String isbn) {
         LibroCompletoDTO libroCompleto = libroService.obtenerLibroCompleto(isbn);
         return ResponseEntity.ok(libroCompleto);
+    }
+    
+    @GetMapping("resumen/{isbn}")
+    public ResponseEntity<LibroResumenDTO> obtenerLibroResumidoPorIsbn(@PathVariable String isbn) {
+        LibroResumenDTO libroResumido = libroService.obtenerLibroResumido(isbn);
+        return ResponseEntity.ok(libroResumido);
+    }
+    
+    @GetMapping("/autocompletar/{isbn}")
+    public ResponseEntity<LibroEnriquecidoDTO> autocompletarLibro(@PathVariable("isbn") String isbn) {
+        
+        //Única llamada al servicio
+        LibroEnriquecidoDTO libroEnriquecido = orquestadorService.buscarYEnriquecer(isbn);
+
+        //Si el roquestador devolvió null entonces ninguna API logró encontrar el libro
+        if (libroEnriquecido == null || libroEnriquecido.getTitulo() == null) {
+            return ResponseEntity.notFound().build(); 
+        }
+
+        return ResponseEntity.ok(libroEnriquecido);
     }
 }

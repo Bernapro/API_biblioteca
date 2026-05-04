@@ -155,13 +155,26 @@ public class LibroService {
 		String[] nombresAutores = libro.getAutores().stream().map(Autor::getPseudonimo).toArray(String[]::new);
 
 		String[] nombresCategorias = libro.getCategorias().stream().map(Categoria::getNombre).toArray(String[]::new);
-
+		
 		// por si acaso
 		String nombreEditorial = (libro.getEditorial() != null) ? libro.getEditorial().getNombre()
 				: "Publicación propia";
+		
+		long nEjemplares = ejemplarRepository.countByLibroIsbn(isbn);
 
 		return new LibroCompletoDTO(libro.getIsbn(), libro.getTitulo(), nombreEditorial, libro.getEdicion(),
 				nombresAutores, libro.getFechaPublicacion(), nombresCategorias, libro.getDewey(),
-				libro.getClasificacionDelCongreso(), libro.getClasificacionDecimalUniversal());
+				libro.getClasificacionDelCongreso(), libro.getClasificacionDecimalUniversal(), nEjemplares);
+	}
+	
+	@Transactional(readOnly = true)
+	public LibroResumenDTO obtenerLibroResumido(String isbn) {
+		LibroCompletoDTO libroCompleto = this.obtenerLibroCompleto(isbn);
+		return new LibroResumenDTO(
+				libroCompleto.isbn(),
+				libroCompleto.titulo(),
+				libroCompleto.editorial(),
+				libroCompleto.nEjemplares()
+				);
 	}
 }

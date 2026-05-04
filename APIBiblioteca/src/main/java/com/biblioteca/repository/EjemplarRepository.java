@@ -16,6 +16,8 @@ public interface EjemplarRepository extends JpaRepository<Ejemplar, UUID> {
     
     boolean existsByNoAdquisicion(String noAdquisicion);
     
+    long countByLibroIsbn(String isbn);
+    
     @Query(value = "SELECT nextval('seq_no_adquisicion')", nativeQuery = true)
     Long obtenerSiguienteSecuenciaAdquisicion();
 }

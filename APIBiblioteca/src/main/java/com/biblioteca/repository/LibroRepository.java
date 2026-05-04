@@ -21,4 +21,6 @@ public interface LibroRepository extends JpaRepository<Libro, String> {
 
 	@Query("SELECT l FROM Libro l LEFT JOIN FETCH l.editorial WHERE l.isbn = :isbn")
 	Optional<Libro> obtenerLibroConEditorial(@Param("isbn") String isbn);
+	
+	
 }
