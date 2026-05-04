@@ -46,7 +46,7 @@ public class PrestamoServiceTest {
         UUID idEjemplar2 = UUID.randomUUID();
         
         // El DTO de entrada con la matrícula/ID del usuario y los 2 libros
-        PrestamoRegistroDTO dto = new PrestamoRegistroDTO("MATRICULA-2026", Set.of(idEjemplar1, idEjemplar2));
+        PrestamoRegistroDTO dto = new PrestamoRegistroDTO("MATRICULA-2026", Set.of(idEjemplar1, idEjemplar2), LocalDate.now().plusDays(4));
 
         // Simulamos los ejemplares físicos en estado correcto
         Ejemplar ejemplar1 = new Ejemplar();
@@ -91,7 +91,7 @@ public class PrestamoServiceTest {
         UUID idEjemplarBueno = UUID.randomUUID();
         UUID idEjemplarMalo = UUID.randomUUID(); // Este libro ya lo tiene alguien más
         
-        PrestamoRegistroDTO dto = new PrestamoRegistroDTO("MATRICULA-2026", Set.of(idEjemplarBueno, idEjemplarMalo));
+        PrestamoRegistroDTO dto = new PrestamoRegistroDTO("MATRICULA-2026", Set.of(idEjemplarBueno, idEjemplarMalo), LocalDate.now().plusDays(4));
 
         Ejemplar ejemplarMalo = new Ejemplar();
         ejemplarMalo.setId(idEjemplarMalo);

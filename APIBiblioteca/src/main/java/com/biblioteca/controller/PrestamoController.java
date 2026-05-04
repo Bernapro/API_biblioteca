@@ -75,7 +75,7 @@ public class PrestamoController {
     }
 	
     @GetMapping
-    public ResponseEntity<PaginaRespuestaDTO<PrestamoResumenDTO>> listarLibrosPaginados(
+    public ResponseEntity<PaginaRespuestaDTO<PrestamoResumenDTO>> listarPrestamosPaginados(
             @RequestParam(defaultValue = "0") int nPage,
             @RequestParam(defaultValue = "10") int len
     ) {

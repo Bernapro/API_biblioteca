@@ -1,6 +1,7 @@
 package com.biblioteca.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,6 +16,8 @@ public interface EjemplarRepository extends JpaRepository<Ejemplar, UUID> {
 	List<Ejemplar> findByLibroIsbn(String isbn);
     
     boolean existsByNoAdquisicion(String noAdquisicion);
+    
+    Optional<Ejemplar> findByNoAdquisicion(String noAdquisicion);
     
     long countByLibroIsbn(String isbn);
     

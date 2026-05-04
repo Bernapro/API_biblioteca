@@ -44,7 +44,7 @@ public class PrestamoService {
 		Prestamo prestamo = new Prestamo();
 		prestamo.setUsuario(dto.usuario());
 		prestamo.setFechaInicio(LocalDate.now());
-		prestamo.setFechaLimite(LocalDate.now().plusDays(4));
+		prestamo.setFechaLimite(dto.fechaLimite());
 		Set<DetallePrestamo> detalles = new HashSet<>();
 
 		if (dto.ejemplaresIds().isEmpty()) {

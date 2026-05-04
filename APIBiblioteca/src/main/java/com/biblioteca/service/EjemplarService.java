@@ -1,9 +1,13 @@
 package com.biblioteca.service;
 
+
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.biblioteca.dto.EjemplarLibroAutoresDTO;
 import com.biblioteca.dto.EjemplarRegistroDTO;
+import com.biblioteca.entity.Autor;
 import com.biblioteca.entity.Ejemplar;
 import com.biblioteca.entity.Libro;
 import com.biblioteca.enums.EstadoEjemplar;
@@ -45,5 +49,21 @@ public class EjemplarService {
 		nuevoEjemplar.setEstado(EstadoEjemplar.DISPONIBLE);
 
 		return ejemplarRepository.save(nuevoEjemplar);
+	}
+	
+	@Transactional(readOnly = true)
+	public EjemplarLibroAutoresDTO obtenerDTOLibroAutores(String noAdquisicion) {
+		Ejemplar ejem = ejemplarRepository.findByNoAdquisicion(noAdquisicion).orElseThrow(() -> new ResourceNotFoundException(
+				"el ejemplar con numero de adquisicion:  " + noAdquisicion + " no existe."));
+		Libro lib = ejem.getLibro();
+		
+		String[] autores = lib.getAutores().stream().map(Autor::getPseudonimo).toArray(String[]::new);
+
+		return new EjemplarLibroAutoresDTO(
+				ejem.getId(),
+				ejem.getNoAdquisicion(),
+				lib.getTitulo(),
+				autores
+				);
 	}
 }
