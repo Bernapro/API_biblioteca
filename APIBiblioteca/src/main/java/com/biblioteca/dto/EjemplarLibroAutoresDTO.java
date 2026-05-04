@@ -6,6 +6,6 @@ public record EjemplarLibroAutoresDTO(
 		UUID id,
 	    String noAdquisicion,
 	    String titulo,
-	    String[] autores) {
-
-}
+	    String[] autores,
+		boolean disponible)
+{}

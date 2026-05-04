@@ -63,7 +63,8 @@ public class EjemplarService {
 				ejem.getId(),
 				ejem.getNoAdquisicion(),
 				lib.getTitulo(),
-				autores
+				autores,
+				ejem.getEstado().equals(EstadoEjemplar.DISPONIBLE)
 				);
 	}
 }

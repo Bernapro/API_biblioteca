@@ -35,7 +35,7 @@ public class Ejemplar {
 	@JsonIgnore
 	private Libro libro;
 	
-	@Enumerated(EnumType.STRING) 
+	@Enumerated(EnumType.STRING)
     @JdbcTypeCode(SqlTypes.NAMED_ENUM)
     @Column(name = "estado", nullable = false, columnDefinition = "estado_ejemplar")
 	private EstadoEjemplar estado;
