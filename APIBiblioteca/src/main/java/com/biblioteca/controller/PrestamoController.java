@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.biblioteca.dto.EjemplarLibroAutoresDTO;
 import com.biblioteca.dto.FinalizarPrestamoRespuestaDTO;
 import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.dto.PrestamoCompletoDTO;
@@ -23,17 +24,21 @@ import com.biblioteca.dto.PrestamoRespuestaDTO;
 import com.biblioteca.dto.PrestamoResumenDTO;
 import com.biblioteca.dto.PrestamosEstadoDTO;
 import com.biblioteca.entity.Prestamo;
+import com.biblioteca.repository.EditorialRepository;
 import com.biblioteca.service.PrestamoService;
 
 @Controller
 @RequestMapping("/biblioteca/prestamos")
 public class PrestamoController {
 
+    private final EditorialRepository editorialRepository;
+
 	
 	private final PrestamoService prestamoService;
 	
-	public PrestamoController(PrestamoService prestamoService) {
+	public PrestamoController(PrestamoService prestamoService, EditorialRepository editorialRepository) {
 		this.prestamoService = prestamoService;
+		this.editorialRepository = editorialRepository;
 	}
 	
 	
@@ -95,5 +100,11 @@ public class PrestamoController {
 	@GetMapping("/estado/{numeroDeDias}")
     public ResponseEntity<PrestamosEstadoDTO> obtenerEstadisticasDeEstadoPrestamos(@PathVariable("numeroDeDias") int numeroDeDias){
 		return ResponseEntity.ok(prestamoService.reporteEstado(numeroDeDias));
+	}
+	
+	@GetMapping("/detalle/{id}")
+	public ResponseEntity<List<EjemplarLibroAutoresDTO>> obtenerDetallePrestamo(@PathVariable("id") UUID id){
+		List<EjemplarLibroAutoresDTO> detalles = prestamoService.ObtenerdetallePrestamo(id);
+		return new ResponseEntity<>(detalles, HttpStatus.OK);
 	}
 }

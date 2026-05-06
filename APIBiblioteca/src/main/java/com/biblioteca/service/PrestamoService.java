@@ -1,27 +1,34 @@
 package com.biblioteca.service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.biblioteca.dto.EjemplarLibroAutoresDTO;
 import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.dto.PrestamoCompletoDTO;
 import com.biblioteca.dto.PrestamoHistorialDTO;
 import com.biblioteca.dto.PrestamoRegistroDTO;
 import com.biblioteca.dto.PrestamoResumenDTO;
 import com.biblioteca.dto.PrestamosEstadoDTO;
+import com.biblioteca.entity.Autor;
 import com.biblioteca.entity.DetallePrestamo;
 import com.biblioteca.entity.Ejemplar;
+import com.biblioteca.entity.Libro;
 import com.biblioteca.entity.Prestamo;
+import com.biblioteca.enums.CondicionEjemplar;
 import com.biblioteca.enums.EstadoEjemplar;
 import com.biblioteca.errorHandling.Exception.*;
 import com.biblioteca.repository.EjemplarRepository;
@@ -154,5 +161,28 @@ public class PrestamoService {
 				reporte.vigentes() != null ? reporte.vigentes() : 0L,
 				reporte.vencidos() != null ? reporte.vencidos() : 0L,
 				reporte.proximosAVencer() != null ? reporte.proximosAVencer() : 0L);
+	}
+
+	@Transactional(readOnly = true)
+	public List<EjemplarLibroAutoresDTO> ObtenerdetallePrestamo(UUID id) {
+		Prestamo prestamo = prestamoRepository.obtenerPrestamoConDetallesCompletos(id)
+				.orElseThrow(() -> new ResourceNotFoundException("El prestamo " + id + " no existe"));
+		Set<DetallePrestamo> detalles = prestamo.getDetalles();
+
+		if (detalles.isEmpty()) {
+			return Collections.emptyList();
+		}
+
+		return detalles.stream().map(detalle -> {
+			Ejemplar ejemplar = detalle.getEjemplar();
+			Libro libro = ejemplar.getLibro();
+
+			String[] autoresArray = libro.getAutores() != null ? libro.getAutores().stream().map(Autor::getPseudonimo).toArray(String[]::new)
+					: new String[0];
+
+			return new EjemplarLibroAutoresDTO(ejemplar.getId(), ejemplar.getNoAdquisicion(), libro.getTitulo(),
+					autoresArray, ejemplar.getEstado() == EstadoEjemplar.DISPONIBLE? true: false);
+		}).toList();
+
 	}
 }

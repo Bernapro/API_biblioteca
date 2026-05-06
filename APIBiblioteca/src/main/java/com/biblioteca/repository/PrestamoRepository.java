@@ -2,6 +2,7 @@ package com.biblioteca.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.domain.Page;
@@ -32,4 +33,8 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, UUID> {
 			+ "SUM(CASE WHEN p.fechaDevolucion IS NULL AND p.fechaLimite >= CURRENT_DATE AND p.fechaLimite <= :fechaProxima THEN 1L ELSE 0L END)) "
 			+ "FROM Prestamo p")
 	PrestamosEstadoDTO generarEstadisticasDeEstado(@Param("fechaProxima") LocalDate fechaProxima);
+
+	@Query("SELECT p FROM Prestamo p " + "LEFT JOIN FETCH p.detalles d " + "LEFT JOIN FETCH d.ejemplar e "
+			+ "LEFT JOIN FETCH e.libro l " + "WHERE p.id = :id")
+	Optional<Prestamo> obtenerPrestamoConDetallesCompletos(@Param("id") UUID id);
 }
