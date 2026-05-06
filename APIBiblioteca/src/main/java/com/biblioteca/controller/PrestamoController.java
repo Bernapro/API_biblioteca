@@ -21,6 +21,7 @@ import com.biblioteca.dto.PrestamoHistorialDTO;
 import com.biblioteca.dto.PrestamoRegistroDTO;
 import com.biblioteca.dto.PrestamoRespuestaDTO;
 import com.biblioteca.dto.PrestamoResumenDTO;
+import com.biblioteca.dto.PrestamosEstadoDTO;
 import com.biblioteca.entity.Prestamo;
 import com.biblioteca.service.PrestamoService;
 
@@ -90,4 +91,9 @@ public class PrestamoController {
         
         return new ResponseEntity<>(historial, HttpStatus.OK);
     }
+	
+	@GetMapping("/estado/{numeroDeDias}")
+    public ResponseEntity<PrestamosEstadoDTO> obtenerEstadisticasDeEstadoPrestamos(@PathVariable("numeroDeDias") int numeroDeDias){
+		return ResponseEntity.ok(prestamoService.reporteEstado(numeroDeDias));
+	}
 }

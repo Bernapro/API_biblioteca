@@ -18,6 +18,7 @@ import com.biblioteca.dto.PrestamoCompletoDTO;
 import com.biblioteca.dto.PrestamoHistorialDTO;
 import com.biblioteca.dto.PrestamoRegistroDTO;
 import com.biblioteca.dto.PrestamoResumenDTO;
+import com.biblioteca.dto.PrestamosEstadoDTO;
 import com.biblioteca.entity.DetallePrestamo;
 import com.biblioteca.entity.Ejemplar;
 import com.biblioteca.entity.Prestamo;
@@ -28,7 +29,6 @@ import com.biblioteca.repository.PrestamoRepository;
 
 @Service
 public class PrestamoService {
-
 
 	private final PrestamoRepository prestamoRepository;
 	private final EjemplarRepository ejemplarRepository;
@@ -44,6 +44,7 @@ public class PrestamoService {
 		Prestamo prestamo = new Prestamo();
 		prestamo.setUsuario(dto.usuario());
 		prestamo.setFechaInicio(LocalDate.now());
+		System.out.println(dto.fechaLimite());
 		prestamo.setFechaLimite(dto.fechaLimite());
 		Set<DetallePrestamo> detalles = new HashSet<>();
 
@@ -107,7 +108,7 @@ public class PrestamoService {
 		List<Prestamo> historial = prestamoRepository.obtenerHistorialPorUsuario(usuario);
 
 		return historial.stream().map(prestamo -> {
-			
+
 			long diasAtraso = prestamo.diasDeAtraso();
 
 			String estado = prestamo.fueDevuelto() ? "finalizado" : diasAtraso > 0 ? "Atrasado" : "A tiempo";
@@ -139,8 +140,19 @@ public class PrestamoService {
 		long diasAtraso = prestamo.diasDeAtraso();
 		String estado = prestamo.fueDevuelto() ? "finalizado" : diasAtraso > 0 ? "Atrasado" : "A tiempo";
 
-		return new PrestamoCompletoDTO(prestamo.getId(), prestamo.getUsuario(),prestamo.getFechaInicio(), prestamo.getFechaLimite(),
-				prestamo.getFechaDevolucion(), prestamo.getCantidadLibrosPrestados(), estado, diasAtraso);
+		return new PrestamoCompletoDTO(prestamo.getId(), prestamo.getUsuario(), prestamo.getFechaInicio(),
+				prestamo.getFechaLimite(), prestamo.getFechaDevolucion(), prestamo.getCantidadLibrosPrestados(), estado,
+				diasAtraso);
 
+	}
+
+	@Transactional(readOnly = true)
+	public PrestamosEstadoDTO reporteEstado(int procimoAVencer) {
+		LocalDate fechaProxima = LocalDate.now().plusDays(procimoAVencer);
+		PrestamosEstadoDTO reporte = prestamoRepository.generarEstadisticasDeEstado(fechaProxima);
+		return new PrestamosEstadoDTO(reporte.totales() != null ? reporte.totales() : 0L,
+				reporte.vigentes() != null ? reporte.vigentes() : 0L,
+				reporte.vencidos() != null ? reporte.vencidos() : 0L,
+				reporte.proximosAVencer() != null ? reporte.proximosAVencer() : 0L);
 	}
 }
