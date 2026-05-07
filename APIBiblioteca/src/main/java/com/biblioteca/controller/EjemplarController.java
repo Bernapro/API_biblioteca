@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.biblioteca.dto.EjemplarEstadoDTO;
 import com.biblioteca.dto.EjemplarLibroAutoresDTO;
 import com.biblioteca.dto.EjemplarRegistroDTO;
 import com.biblioteca.dto.EjemplarRespuestaDTO;
@@ -44,5 +45,11 @@ public class EjemplarController {
 		EjemplarLibroAutoresDTO dto = ejemplarService.obtenerDTOLibroAutores(noAdquisicion);
 		return ResponseEntity.ok(dto);
 	}
+	
+	@GetMapping("/estado")
+    public ResponseEntity<EjemplarEstadoDTO> obtenerEstadisticasEjemplares() {
+		EjemplarEstadoDTO  reporteSeguro = ejemplarService.obtenerEstadoEjemplares();
+        return ResponseEntity.ok(reporteSeguro);
+    }
 
 }

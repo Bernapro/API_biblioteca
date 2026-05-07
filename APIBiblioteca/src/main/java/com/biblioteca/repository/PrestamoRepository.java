@@ -37,4 +37,6 @@ public interface PrestamoRepository extends JpaRepository<Prestamo, UUID> {
 	@Query("SELECT p FROM Prestamo p " + "LEFT JOIN FETCH p.detalles d " + "LEFT JOIN FETCH d.ejemplar e "
 			+ "LEFT JOIN FETCH e.libro l " + "WHERE p.id = :id")
 	Optional<Prestamo> obtenerPrestamoConDetallesCompletos(@Param("id") UUID id);
+	
+	
 }

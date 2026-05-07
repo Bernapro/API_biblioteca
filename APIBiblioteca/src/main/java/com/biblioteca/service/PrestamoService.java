@@ -28,11 +28,11 @@ import com.biblioteca.entity.DetallePrestamo;
 import com.biblioteca.entity.Ejemplar;
 import com.biblioteca.entity.Libro;
 import com.biblioteca.entity.Prestamo;
-import com.biblioteca.enums.CondicionEjemplar;
 import com.biblioteca.enums.EstadoEjemplar;
 import com.biblioteca.errorHandling.Exception.*;
 import com.biblioteca.repository.EjemplarRepository;
 import com.biblioteca.repository.PrestamoRepository;
+import com.biblioteca.dto.ExtenderPrestamoDTO;
 
 @Service
 public class PrestamoService {
@@ -108,6 +108,31 @@ public class PrestamoService {
 
 		return prestamo;
 	}
+	
+	@Transactional
+    public ExtenderPrestamoDTO extenderPrestamo(UUID idPrestamo, LocalDate fechaNueva) {
+        Prestamo prestamo = prestamoRepository.findById(idPrestamo)
+                .orElseThrow(() -> new ResourceNotFoundException("El prestamo no existe"));
+
+        LocalDate fechaAntigua = prestamo.getFechaLimite();
+        
+        if (prestamo.fueDevuelto()) {
+            return new ExtenderPrestamoDTO(fechaAntigua, fechaAntigua, "El prestamo ya fue devuelto");
+        }
+        
+        if (!fechaNueva.isAfter(fechaAntigua)) {
+            return new ExtenderPrestamoDTO(fechaAntigua, fechaAntigua, "La nueva fecha debe ser posterior a la actual");
+        }
+
+        prestamo.setFechaLimite(fechaNueva);
+
+
+        return new ExtenderPrestamoDTO(
+                fechaAntigua,
+                fechaNueva,
+                "Actualización exitosa"
+        );
+    }
 
 	@Transactional(readOnly = true)
 	public List<PrestamoHistorialDTO> obtenerHistorialUsuario(String usuario) {

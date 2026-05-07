@@ -26,6 +26,7 @@ import com.biblioteca.repository.CategoriaRepository;
 import com.biblioteca.repository.EditorialRepository;
 import com.biblioteca.repository.EjemplarRepository;
 import com.biblioteca.repository.LibroRepository;
+import com.biblioteca.utilities.StringFormatUtil;
 
 @Service
 public class LibroService {
@@ -145,7 +146,8 @@ public class LibroService {
 
 	@Transactional(readOnly = true)
 	public LibroCompletoDTO obtenerLibroCompleto(String isbn) {
-		Libro libro = libroRepository.obtenerLibroConEditorial(isbn)
+		String fisbn = StringFormatUtil.limpiarIsbn(isbn);
+		Libro libro = libroRepository.obtenerLibroConEditorial(fisbn)
 				.orElseThrow(() -> new ResourceNotFoundException("El libro con ISBN " + isbn + " no existe."));
 		/*
 		 * Utilizo Streams para que sea más fácil construir la lista, solo necesito los
@@ -160,7 +162,7 @@ public class LibroService {
 		String nombreEditorial = (libro.getEditorial() != null) ? libro.getEditorial().getNombre()
 				: "Publicación propia";
 		
-		long nEjemplares = ejemplarRepository.countByLibroIsbn(isbn);
+		long nEjemplares = ejemplarRepository.countByLibroIsbn(fisbn);
 
 		return new LibroCompletoDTO(libro.getIsbn(), libro.getTitulo(), nombreEditorial, libro.getEdicion(),
 				nombresAutores, libro.getFechaPublicacion(), nombresCategorias, libro.getDewey(),
@@ -169,7 +171,9 @@ public class LibroService {
 	
 	@Transactional(readOnly = true)
 	public LibroResumenDTO obtenerLibroResumido(String isbn) {
-		LibroCompletoDTO libroCompleto = this.obtenerLibroCompleto(isbn);
+		String fisbn = StringFormatUtil.limpiarIsbn(isbn);
+		System.out.println(fisbn);
+		LibroCompletoDTO libroCompleto = this.obtenerLibroCompleto(fisbn);
 		return new LibroResumenDTO(
 				libroCompleto.isbn(),
 				libroCompleto.titulo(),

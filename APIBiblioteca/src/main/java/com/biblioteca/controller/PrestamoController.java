@@ -1,5 +1,6 @@
 package com.biblioteca.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.biblioteca.dto.EjemplarLibroAutoresDTO;
+import com.biblioteca.dto.ExtenderPrestamoDTO;
 import com.biblioteca.dto.FinalizarPrestamoRespuestaDTO;
 import com.biblioteca.dto.PaginaRespuestaDTO;
 import com.biblioteca.dto.PrestamoCompletoDTO;
@@ -31,14 +33,11 @@ import com.biblioteca.service.PrestamoService;
 @RequestMapping("/biblioteca/prestamos")
 public class PrestamoController {
 
-    private final EditorialRepository editorialRepository;
-
 	
 	private final PrestamoService prestamoService;
 	
-	public PrestamoController(PrestamoService prestamoService, EditorialRepository editorialRepository) {
+	public PrestamoController(PrestamoService prestamoService) {
 		this.prestamoService = prestamoService;
-		this.editorialRepository = editorialRepository;
 	}
 	
 	
@@ -70,6 +69,14 @@ public class PrestamoController {
 				);
 		
 		return new ResponseEntity<>(respuesta, HttpStatus.OK);
+	}
+	
+	@PatchMapping("{id}/{fecha}")
+	public ResponseEntity<ExtenderPrestamoDTO> ExtenderPrestamo(
+			@PathVariable("id") UUID id,
+			@PathVariable("fecha") LocalDate nuevaFecha){
+		ExtenderPrestamoDTO dto = prestamoService.extenderPrestamo(id, nuevaFecha); 
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
 	
 	@GetMapping("/usuario/{usuario}")

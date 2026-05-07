@@ -5,6 +5,7 @@ package com.biblioteca.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.biblioteca.dto.EjemplarEstadoDTO;
 import com.biblioteca.dto.EjemplarLibroAutoresDTO;
 import com.biblioteca.dto.EjemplarRegistroDTO;
 import com.biblioteca.entity.Autor;
@@ -67,4 +68,17 @@ public class EjemplarService {
 				ejem.getEstado().equals(EstadoEjemplar.DISPONIBLE)
 				);
 	}
+	
+    public EjemplarEstadoDTO obtenerEstadoEjemplares() {
+        
+        EjemplarEstadoDTO reporte = ejemplarRepository.generarEstadisticasEjemplares();
+        
+        EjemplarEstadoDTO reporteSeguro = new EjemplarEstadoDTO(
+            reporte.totales() != null ? reporte.totales() : 0L,
+            reporte.prestados() != null ? reporte.prestados() : 0L,
+            reporte.disponibles() != null ? reporte.disponibles() : 0L
+        );
+
+        return reporteSeguro;
+    }
 }
