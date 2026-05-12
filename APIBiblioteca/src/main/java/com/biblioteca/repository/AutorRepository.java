@@ -13,6 +13,6 @@ import com.biblioteca.entity.Autor;
 public interface AutorRepository extends JpaRepository<Autor, Long> {
 
 	@Query(value = "SELECT * FROM autor a " + "WHERE lower(unaccent(replace(a.pseudonimo, ' ', ''))) = "
-			+ "      lower(unaccent(replace(:nombreIngresado, ' ', ''))) " + "LIMIT 1", nativeQuery = true)
+			+ "      lower(f_unaccent(replace(:nombreIngresado, ' ', ''))) " + "LIMIT 1", nativeQuery = true)
 	Optional<Autor> encontrarAutorNormalizado(@Param("nombreIngresado") String nombreIngresado);
 }

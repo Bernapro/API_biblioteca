@@ -13,7 +13,7 @@ import com.biblioteca.entity.Categoria;
 public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
 	@Query(value = "SELECT * FROM categoria c " + "WHERE lower(unaccent(replace(c.categoria, ' ', ''))) = "
-			+ "      lower(unaccent(replace(:nombreIngresado, ' ', ''))) " + "LIMIT 1", nativeQuery = true)
+			+ "      lower(f_unaccent(replace(:nombreIngresado, ' ', ''))) " + "LIMIT 1", nativeQuery = true)
 	Optional<Categoria> encontrarCategoriaNormalizada(@Param("nombreIngresado") String nombreIngresado);
 
 }

@@ -13,6 +13,6 @@ import com.biblioteca.entity.Editorial;
 public interface EditorialRepository extends JpaRepository<Editorial, Long> {
 
 	@Query(value = "SELECT * FROM editorial e " + "WHERE lower(unaccent(replace(e.editorial, ' ', ''))) = "
-			+ "      lower(unaccent(replace(:nombreIngresado, ' ', ''))) " + "LIMIT 1", nativeQuery = true)
+			+ "      lower(f_unaccent(replace(:nombreIngresado, ' ', ''))) " + "LIMIT 1", nativeQuery = true)
 	Optional<Editorial> encontrarEditorialNormalizada(@Param("nombreIngresado") String nombreIngresado);
 }
