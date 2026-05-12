@@ -26,11 +26,14 @@ import com.biblioteca.dto.PrestamoRespuestaDTO;
 import com.biblioteca.dto.PrestamoResumenDTO;
 import com.biblioteca.dto.PrestamosEstadoDTO;
 import com.biblioteca.entity.Prestamo;
-import com.biblioteca.repository.EditorialRepository;
 import com.biblioteca.service.PrestamoService;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Controller
 @RequestMapping("/biblioteca/prestamos")
+@Tag(name = "Catálogo de Préstamo", description = "Operaciones para gestionar el catálogo de préstamos")
 public class PrestamoController {
 
 	
@@ -40,7 +43,8 @@ public class PrestamoController {
 		this.prestamoService = prestamoService;
 	}
 	
-	
+	//Realizar un préstamo
+    @Operation(summary = "Realizar un préstamo")
 	@PostMapping
     public ResponseEntity<PrestamoRespuestaDTO> realizarPrestamo(@RequestBody PrestamoRegistroDTO dto) {
         
@@ -56,6 +60,9 @@ public class PrestamoController {
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
 	
+	//finalizar un prestamo
+    @Operation(summary = "Finalizar un préstamo", 
+            description = "Buscar y actualiza la fecha de devolución del préstamo, representa la devolución de ejemplares físicos")
 	@PatchMapping("/{id_prestamo}")
 	public ResponseEntity<FinalizarPrestamoRespuestaDTO> finalizarPrestamo(@PathVariable("id_prestamo") UUID idPrestamo){
 		Prestamo prestamo = prestamoService.finalizarPrestamo(idPrestamo);
@@ -71,6 +78,9 @@ public class PrestamoController {
 		return new ResponseEntity<>(respuesta, HttpStatus.OK);
 	}
 	
+	//Extender la fecha limite de un prestamo
+    @Operation(summary = "Extender un prestamo", 
+            description = "Buscar y actualizar la fecha límite para devolver los recursos")
 	@PatchMapping("{id}/{fecha}")
 	public ResponseEntity<ExtenderPrestamoDTO> ExtenderPrestamo(
 			@PathVariable("id") UUID id,
@@ -78,7 +88,8 @@ public class PrestamoController {
 		ExtenderPrestamoDTO dto = prestamoService.extenderPrestamo(id, nuevaFecha); 
 		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
-	
+	//Obtener el historial de un usuario
+    @Operation(summary = "Obtener el Historial de un usuario")
 	@GetMapping("/usuario/{usuario}")
     public ResponseEntity<List<PrestamoHistorialDTO>> obtenerHistorial(@PathVariable("usuario") String usuario) {
         
@@ -87,6 +98,9 @@ public class PrestamoController {
         return new ResponseEntity<>(historial, HttpStatus.OK);
     }
 	
+	//Obtener de manera paginada, con la opcion de elegir el número de página y el tamaño
+    @Operation(summary = "Listar los prestamos", 
+            description = "Buscar y obtener una página con información resumida sobre los préstamos")
     @GetMapping
     public ResponseEntity<PaginaRespuestaDTO<PrestamoResumenDTO>> listarPrestamosPaginados(
             @RequestParam(defaultValue = "0") int nPage,
@@ -96,6 +110,9 @@ public class PrestamoController {
         return ResponseEntity.ok(catalogo);
     }
     
+    //Consultar la información completa de un prestamo
+    @Operation(summary = "Obtener un prestamo", 
+            description = "Buscar y obtener los datos de un prestamo por id")
 	@GetMapping("{id}")
     public ResponseEntity <PrestamoCompletoDTO> obtenerPrestamo(@PathVariable("id") UUID id) {
         
@@ -104,11 +121,19 @@ public class PrestamoController {
         return new ResponseEntity<>(historial, HttpStatus.OK);
     }
 	
+	//Obtener el estado de la entidad "Prestamo", el parametro "numeroDeDias" tiene la finalidad de fungir ccomo referencia para considerar
+	//a un prestamo cómo "próximo a vencer", si numeroDeDias = 3; entonces todos los prestamos cuya fechaLimite se cumpla dentro de 3 dias (a partir de hoy)
+	//serán considerados cómo "próximos a vencer"
+    @Operation(summary = "Obtener el estado de la entidad \"prestamo\"", 
+            description = "El parámetro \"numeroDeDias\" tiene la finalidad de fungir ccomo referencia para considerar\r\n"
+            		+ "	a un prestamo cómo \"próximo a vencer\", si numeroDeDias = 3; entonces todos los prestamos cuya fechaLimite se cumpla dentro de 3 dias (a partir de hoy)\r\n"
+            		+ "	serán considerados cómo \"próximos a vencer\"")
 	@GetMapping("/estado/{numeroDeDias}")
     public ResponseEntity<PrestamosEstadoDTO> obtenerEstadisticasDeEstadoPrestamos(@PathVariable("numeroDeDias") int numeroDeDias){
 		return ResponseEntity.ok(prestamoService.reporteEstado(numeroDeDias));
 	}
 	
+	//Obtiene las líneas de detalle de un préstamo (lista de ejemplares que fueron prestados)
 	@GetMapping("/detalle/{id}")
 	public ResponseEntity<List<EjemplarLibroAutoresDTO>> obtenerDetallePrestamo(@PathVariable("id") UUID id){
 		List<EjemplarLibroAutoresDTO> detalles = prestamoService.ObtenerdetallePrestamo(id);

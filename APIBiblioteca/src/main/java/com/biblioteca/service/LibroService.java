@@ -1,14 +1,15 @@
 package com.biblioteca.service;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import com.biblioteca.dto.LibroCompletoDTO;
 import com.biblioteca.dto.LibroRegistroDTO;
 import com.biblioteca.dto.LibroResumenDTO;
@@ -26,6 +27,7 @@ import com.biblioteca.repository.CategoriaRepository;
 import com.biblioteca.repository.EditorialRepository;
 import com.biblioteca.repository.EjemplarRepository;
 import com.biblioteca.repository.LibroRepository;
+import com.biblioteca.repository.LibroSpecification;
 import com.biblioteca.utilities.StringFormatUtil;
 
 @Service
@@ -51,7 +53,7 @@ public class LibroService {
 
 		// se mapean los campos propios del objeto Libro
 		Libro libro = new Libro();
-		libro.setIsbn(dto.isbn());
+		libro.setIsbn(StringFormatUtil.limpiarIsbn(dto.isbn()));
 		libro.setTitulo(dto.titulo());
 		libro.setEdicion(dto.edicion());
 		libro.setFechaPublicacion(dto.fechaPublicacion());
@@ -181,4 +183,22 @@ public class LibroService {
 				libroCompleto.nEjemplares()
 				);
 	}
+	
+    public Page<LibroCompletoDTO> buscarLibrosAvanzado(
+             String autor,
+             String categoria,
+             String editorial,
+             LocalDate fechaPub,
+             String codigo,
+            Pageable pageable) {
+
+        Specification<Libro> specs = LibroSpecification.buscarConFiltros(autor, categoria, editorial, fechaPub, codigo);
+
+        Page<Libro> resultados = libroRepository.findAll(specs, pageable);
+        Page<LibroCompletoDTO> resultadosDTO = resultados.map(libro -> new LibroCompletoDTO(
+        		libro.getIsbn(), libro.getTitulo(), libro.getEditorial().getNombre(), libro.getEdicion(),
+        		libro.getAutores().stream().map(Autor::getPseudonimo).toArray(String[]::new), libro.getFechaPublicacion(), libro.getCategorias().stream().map(Categoria::getNombre).toArray(String[]::new), libro.getDewey(),
+				libro.getClasificacionDelCongreso(), libro.getClasificacionDecimalUniversal(), ejemplarRepository.countByLibroIsbn(libro.getIsbn())));
+        return resultadosDTO;
+    }
 }
